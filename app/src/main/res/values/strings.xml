@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SpaceX</string>
+    <string name="err_generic">Generic error</string>
+    <string name="err_presenter">Failed to attach presenter</string>
+    <string name="err_no_internet">Check your internet connection</string>
+    <string name="err_no_desc">No description provided</string>
+    <string name="err_no_browser">Install a web-browser to proceed</string>
+</resources>
