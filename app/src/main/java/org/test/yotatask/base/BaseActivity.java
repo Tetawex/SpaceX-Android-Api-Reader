@@ -52,7 +52,7 @@ public abstract class BaseActivity<P extends BasePresenter>
     protected void onStart() {
         super.onStart();
         if (firstAttach)
-            presenter.onFirstViewAttached();
+            getPresenter().onFirstViewAttached();
         postInit();
     }
 
@@ -95,6 +95,8 @@ public abstract class BaseActivity<P extends BasePresenter>
     }
 
     public P getPresenter() {
+        if (presenter == null)
+            attachPresenter();
         return presenter;
     }
 }
