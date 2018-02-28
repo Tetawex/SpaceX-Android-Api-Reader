@@ -51,8 +51,10 @@ public abstract class BaseActivity<P extends BasePresenter>
     @Override
     protected void onStart() {
         super.onStart();
-        if (firstAttach)
+        if (firstAttach) {
+            firstAttach = false;
             getPresenter().onFirstViewAttached();
+        }
         postInit();
     }
 
