@@ -31,16 +31,6 @@ public class LaunchFeedViewState extends ViewState<LaunchFeedView> implements La
     }
 
     @Override
-    public void setYearSelectorValue(final LaunchYearType type) {
-        saveCommand(new Command<LaunchFeedView>() {
-            @Override
-            public void run(LaunchFeedView view) {
-                view.setYearSelectorValue(type);
-            }
-        });
-    }
-
-    @Override
     public void showProgressbar() {
         submitCommand(new Command<LaunchFeedView>() {
             @Override

@@ -2,13 +2,13 @@ package org.test.yotatask.app.launchfeed;
 
 import android.content.ComponentName;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -16,9 +16,9 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import org.test.yotatask.base.BaseActivity;
-import org.test.yotatask.app.PresenterManager;
 import org.test.yotatask.R;
+import org.test.yotatask.app.PresenterManager;
+import org.test.yotatask.base.BaseActivity;
 
 import java.util.List;
 
@@ -50,12 +50,19 @@ public class LaunchFeedActivity
         recyclerView = findViewById(R.id.rv_launches);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(launchFeedRecyclerAdapter);
+
+        progressbar = findViewById(R.id.progressbar);
+
+        setupSpinner();
+    }
+
+    @Override
+    public void postInit() {
         launchFeedRecyclerAdapter.setClickListener(new LaunchFeedRecyclerAdapter.LaunchClickListener() {
             @Override
             public void onClick(String actionUrl) {
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(actionUrl));
                 //Check if user has a web-browser
-                PackageManager packageManager = getBaseContext().getPackageManager();
                 ComponentName componentName = browserIntent.resolveActivity(
                         getBaseContext().getPackageManager());
                 if (componentName != null)
@@ -66,11 +73,19 @@ public class LaunchFeedActivity
                             .show();
             }
         });
-
-        progressbar = findViewById(R.id.progressbar);
-
-        setupSpinner();
+        SpinnerInteractionListener listener = new SpinnerInteractionListener() {
+            @Override
+            public void onItemSelectedByUser(AdapterView<?> parent, View view, int pos, long id) {
+                launchFeedRecyclerAdapter.clearImageLoader();
+                Log.d("wut", "");
+                if (getPresenter() != null)
+                    getPresenter().onYearTypeChanged(spinnerPosToYearType(pos));
+            }
+        };
+        spinner.setOnTouchListener(listener);
+        spinner.setOnItemSelectedListener(listener);
     }
+
 
     private void setupSpinner() {
         spinner = findViewById(R.id.spinner_years);
@@ -78,18 +93,6 @@ public class LaunchFeedActivity
                 R.array.years_array, R.layout.spinneritem_year);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                launchFeedRecyclerAdapter.clearImageLoader();
-                getPresenter().onYearTypeChanged(spinnerPosToYearType(position));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
     }
 
     @Override
@@ -100,11 +103,6 @@ public class LaunchFeedActivity
     @Override
     public void setFeed(List<LaunchData> list) {
         launchFeedRecyclerAdapter.replaceDataWithNotify(list);
-    }
-
-    @Override
-    public void setYearSelectorValue(LaunchYearType type) {
-        spinner.setSelection(yearTypeToSpinnerPos(type));
     }
 
     @Override

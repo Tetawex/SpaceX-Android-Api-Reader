@@ -1,6 +1,7 @@
 package org.test.yotatask.base;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
@@ -23,28 +24,36 @@ public abstract class BaseActivity<P extends BasePresenter>
 
     public abstract void setupViews();
 
+    public abstract void postInit();
+
     private P presenter;
 
-    private boolean firstAttach;
+    private boolean firstAttach = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
         setupViews();
-        attachPresenter();
 
-        if (savedInstanceState == null)
-            firstAttach = true;
+        if (savedInstanceState != null) {
+            firstAttach = false;
+        }
+
+        attachPresenter();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@Nullable Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        attachPresenter();
-
         if (firstAttach)
             presenter.onFirstViewAttached();
+        postInit();
     }
 
     protected void onStop() {
@@ -77,7 +86,8 @@ public abstract class BaseActivity<P extends BasePresenter>
     public void showError(Throwable t) {
         if (t instanceof IOException)
             showToast(R.string.err_no_internet);
-        showToast(R.string.err_generic);
+        else
+            showToast(R.string.err_generic);
     }
 
     public void showToast(int stringId) {

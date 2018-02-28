@@ -36,6 +36,7 @@ public class LaunchFeedPresenter extends BasePresenter<LaunchFeedView> {
 
                     @Override
                     public void onError(Throwable t) {
+                        t.printStackTrace();
                         getViewRelay().showError(t);
                         getViewRelay().hideProgressBar();
                     }
@@ -44,7 +45,6 @@ public class LaunchFeedPresenter extends BasePresenter<LaunchFeedView> {
 
     public void onYearTypeChanged(LaunchYearType type) {
         launchYearType = type;
-        getViewRelay().setYearSelectorValue(type);
         loadData();
     }
 }
